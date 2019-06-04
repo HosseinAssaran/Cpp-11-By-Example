@@ -3,7 +3,10 @@
 #include <iostream>
 #include <algorithm>
 #include <stdexcept>
-#include <bits/stdc++.h> 
+#include <map>
+#include <set>
+#include <deque>
+#include <list>
 #include<memory> 
 using namespace std;
 
