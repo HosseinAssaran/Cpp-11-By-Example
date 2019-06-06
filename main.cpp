@@ -7,7 +7,8 @@
 #include <set>
 #include <deque>
 #include <list>
-#include<memory> 
+#include <memory> 
+#include <fstream>
 using namespace std;
 
 void OverloadVsOverideTest(void)
@@ -677,12 +678,11 @@ namespace SmartPointerTest
 	{
 		unique_ptr<A> p1 (new A); 
 		p1 -> show(); 
-		
 		// returns the memory address of p1 
 		cout << "p1 address: " <<  p1.get() << endl; 
 		
 		// transfers ownership to p2 
-		unique_ptr<A> p2 = move(p1); 
+		unique_ptr<A> p2(move(p1)); 
 		p2 -> show(); 
 		cout << "p1 address: " << p1.get() << endl; 
 		cout << "p2 address: " << p2.get() << endl; 
@@ -701,7 +701,8 @@ namespace SmartPointerTest
 		shared_ptr<A> p1 (new A); 
 		p1->show(); 
 		cout << "p1 address: " << p1.get() << endl; 
-		
+		cout << "p1 use count: " << p1.use_count() << endl; 
+
 		shared_ptr<A> p2 (p1); 
 		p2->show(); 
 		cout << "p1 address: " << p1.get() << endl; 
@@ -715,12 +716,14 @@ namespace SmartPointerTest
 		// Relinquishes ownership of p1 on the object 
 		//and pointer becomes NULL 
 		p1.reset(); 
-		shared_ptr<A> p3 (p2);
+		shared_ptr<A> p3 ;
+		p3 = p2;
+		p3->show(); 
 		cout << "p1 address: " << p1.get() << endl; 
-		cout << "p2 use count: " << p2.use_count() << endl; 
-		cout << "p3 use count: " << p2.use_count() << endl; 
 		cout << "p2 address: " << p2.get() << endl;
 		cout << "p3 address: " << p3.get() << endl;
+		cout << "p2 use count: " << p2.use_count() << endl; 
+		cout << "p3 use count: " << p2.use_count() << endl; 
 		return p2;
 	}	
 	
@@ -788,6 +791,50 @@ namespace SmartPointerTest
 	}	
 }
 
+void StreamsTest(void)
+{
+   char data[100];
+
+   // open a file in write mode.
+   ofstream outfile;
+   outfile.open("afile.dat");
+   cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+   cout << "Writing to the file" << endl;
+   cout << "Enter your name: "; 
+   cin.getline(data, 100);
+
+   // write inputted data into the file.
+   outfile << data << endl;
+
+   cout << "Enter your age: "; 
+   cin >> data;
+   cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+   // again write inputted data into the file.
+   outfile << data << endl;
+
+   // close the opened file.
+   outfile.close();
+
+   // open a file in read mode.
+   ifstream infile; 
+   infile.open("afile.dat"); 
+ 
+   cout << "Reading from the file" << endl; 
+   infile.getline(data, 100); 
+   // write the data at the screen.
+   cout << data << endl;
+   
+   // again read the data from the file and display it.
+   infile >> data; 
+   // write the data at the screen.
+   cout << data << endl; 
+
+   // close the opened file.
+   infile.close();
+}
+
 int showTestMenu(void)
 {
 	int i = 0;
@@ -807,6 +854,7 @@ int showTestMenu(void)
 	cout << "\n13.BindTest";
 	cout << "\n14.LambadaTest";
 	cout << "\n15.SmartPointerTest";
+	cout << "\n16.StreamsTest";
 	cout << endl;
 	cin	 >> i;
 	cout << endl;
@@ -860,6 +908,9 @@ int main() {
 		break;	
 		case(15):
 		SmartPointerTest::Run();
+		break;	
+		case(16):
+		StreamsTest();
 		break;			
 	default:
 		break;
