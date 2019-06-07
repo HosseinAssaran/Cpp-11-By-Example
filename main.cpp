@@ -9,6 +9,8 @@
 #include <list>
 #include <memory> 
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 using namespace std;
 
 void OverloadVsOverideTest(void)
@@ -793,68 +795,78 @@ namespace SmartPointerTest
 
 void StreamsTest(void)
 {
-   char data[100];
+   string data;
 
-   // open a file in write mode.
-   ofstream outfile;
-   outfile.open("afile.dat");
-   cin.ignore(numeric_limits<streamsize>::max(), '\n');
+   cout << "Use of left, setfill('x') and setw(6) manipulators before 123 value:" << endl; 
+   cout << left << setfill('x') << setw(6) << 123 << endl;
 
+   // open a file in read mode 
+   ifstream template_file("templateFile.txt");
+   // open a file in write mode and copy templateFile.txt to it
+   ofstream out_file("copyOfTemplate.dat", ios::trunc);
+   if(template_file && out_file)
+		out_file << template_file.rdbuf();
+	template_file.close();
+	out_file.close();
+
+	// display file content
+	ifstream in_file("copyOfTemplate.dat");
+	while(getline(in_file, data))
+	{
+		cout << data << endl;
+	}
+	in_file.close();
+
+
+   out_file.open("outFileTest.dat", ios::trunc);
    cout << "Writing to the file" << endl;
-   cout << "Enter your name: "; 
-   cin.getline(data, 100);
-
-   // write inputted data into the file.
-   outfile << data << endl;
-
-   cout << "Enter your age: "; 
-   cin >> data;
+   cout << "Enter your name: ";
    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
+   getline(cin, data);
+   stringstream str_stream;  
+   str_stream << "Name: ";
+   data = str_stream.str() + data;
+   // write inputted data into the file.
+   out_file << data << endl;
+   cout << "Enter your age: "; 
+   cin >> data; //will tokenize values according to white spaces
+   cin.ignore(numeric_limits<streamsize>::max(), '\n');
+   // reset stringstream
+   str_stream.str("");
+   str_stream.clear();
+   str_stream << " years";
    // again write inputted data into the file.
-   outfile << data << endl;
-
-   // close the opened file.
-   outfile.close();
+   out_file << data + str_stream.str() << endl;
+   out_file.close();
 
    // open a file in read mode.
-   ifstream infile; 
-   infile.open("afile.dat"); 
- 
+   in_file.open("outFileTest.dat"); 
    cout << "Reading from the file" << endl; 
-   infile.getline(data, 100); 
-   // write the data at the screen.
-   cout << data << endl;
-   
-   // again read the data from the file and display it.
-   infile >> data; 
-   // write the data at the screen.
-   cout << data << endl; 
-
-   // close the opened file.
-   infile.close();
+   while(getline(in_file, data)) 
+	cout << data << endl;
+   in_file.close();
 }
 
 int showTestMenu(void)
 {
 	int i = 0;
 	cout << "\nPlease choose one of sample test below:";
-	cout << "\n1. OverloadVsOverideTest";
-	cout << "\n2. GiveWordsAndSortTest";
-	cout << "\n3. TryCatchTest";
-	cout << "\n4. ConstAndRefInitTest";
-	cout << "\n5. FunctorTest";
-	cout << "\n6. IteratorTest";
-	cout << "\n7. SetContainerTest";
-	cout << "\n8. AlgorithmsTest";
-	cout << "\n9. IteratorDesignPatternTest";
-	cout << "\n10.StreamIteratorTest"; 
-	cout << "\n11.DynamicCastTest";
-	cout << "\n12.TypeIdTest";
-	cout << "\n13.BindTest";
-	cout << "\n14.LambadaTest";
-	cout << "\n15.SmartPointerTest";
-	cout << "\n16.StreamsTest";
+	cout << "\n1.  OverloadVsOverideTest";
+	cout << "\n2.  GiveWordsAndSortTest";
+	cout << "\n3.  TryCatchTest";
+	cout << "\n4.  ConstAndRefInitTest";
+	cout << "\n5.  FunctorTest";
+	cout << "\n6.  IteratorTest";
+	cout << "\n7.  SetContainerTest";
+	cout << "\n8.  AlgorithmsTest";
+	cout << "\n9.  IteratorDesignPatternTest";
+	cout << "\n10. StreamIteratorTest"; 
+	cout << "\n11. DynamicCastTest";
+	cout << "\n12. TypeIdTest";
+	cout << "\n13. BindTest";
+	cout << "\n14. LambadaTest";
+	cout << "\n15. SmartPointerTest";
+	cout << "\n16. StreamsTest";
 	cout << endl;
 	cin	 >> i;
 	cout << endl;

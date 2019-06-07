@@ -1,0 +1,2 @@
+This is just for test.
+This file contents are copied to another file.
