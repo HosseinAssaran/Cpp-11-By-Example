@@ -850,6 +850,7 @@ void StreamsTest(void)
    in_file.close();
 }
 
+
 namespace MultiThreadingWithAsyncTest
 {
 	mutex m;
@@ -867,21 +868,46 @@ namespace MultiThreadingWithAsyncTest
 	{
 		vector<string> results;
 		for ( ; ; ) {
-			m.lock();
 			if ( backlog.size() == 0 ) {
-				m.unlock();
 				return results;
 			}
 			string word = backlog.front();
 			backlog.pop_front();
-			m.unlock();
 			if ( match( pattern, word ) )
 				results.push_back( word );
 		}
 	}
 
+	vector<string> find_matches_m( string pattern, deque<string> &backlog )
+	{
+		vector<string> results;
+		unique_lock<mutex> guard(m);
+		for ( ; ; ) {
+			if ( backlog.size() == 0 ) {
+				guard.unlock();
+				return results;
+			}
+			string word = backlog.front();
+			backlog.pop_front();
+			guard.unlock();
+			if ( match( pattern, word ) )
+				results.push_back( word );
+		    guard.lock();
+		}
+	}
+
+	void print_results(vector<string> words, string &pattern)
+	{
+		cerr << "Found " << words.size() 
+			<< " matches for " << pattern 
+			<< endl;
+		for ( auto s : words )
+			cout << s << "\t";
+		cout << endl;
+	}
+	
 	template<class ASYNC>
-	void print_results( ASYNC &f, string &pattern, int threadno )
+	void print_results_m( ASYNC &f, string &pattern, int threadno )
 	{
 		vector<string> words = f.get();
 		cerr << "Found " << words.size() 
@@ -889,7 +915,8 @@ namespace MultiThreadingWithAsyncTest
 			<< " in thread " << threadno
 			<< endl;
 		for ( auto s : words )
-			cout << s << "\n";
+			cout << s << "\t";
+		cout << endl;
 	}
 
 	int sampleMain( int argc, char *argv[] )
@@ -910,19 +937,36 @@ namespace MultiThreadingWithAsyncTest
 			return -1;
 		}
 		string word;
-		deque<string> backlog;
+		deque<string> backlog, backlog_m;
 		while ( f >> word )
+		{
 			backlog.push_back( word );
+			backlog_m.push_back( word );
+		}
+		auto start = chrono::steady_clock::now();
+		vector<string> words = find_matches( pattern, backlog );
+		auto end = chrono::steady_clock::now();
+		print_results(words, pattern);
+		cout << "Elapsed time to find pattern in singlethread form : " 
+		<< chrono::duration_cast<chrono::milliseconds>(end - start).count()
+		<< " ms" << endl << endl;		
 		//
 		// Now process the words and print the results
 		//
-		auto f1 = async( launch::async, find_matches, pattern, ref(backlog) );
-		auto f2 = async( launch::async, find_matches, pattern, ref(backlog) );
-		auto f3 = async( launch::async, find_matches, pattern, ref(backlog) );
-		print_results( f1, pattern, 1 );
-		print_results( f2, pattern, 2 );
-		print_results( f3, pattern, 3 );
-
+		start = chrono::steady_clock::now();
+		auto f1 = async( launch::async, find_matches_m, pattern, ref(backlog_m) );
+		auto f2 = async( launch::async, find_matches_m, pattern, ref(backlog_m) );
+		auto f3 = async( launch::async, find_matches_m, pattern, ref(backlog_m) );
+		f1.wait();
+		f2.wait();
+		f3.wait();
+	    end = chrono::steady_clock::now();
+		print_results_m( f1, pattern, 1 );
+		print_results_m( f2, pattern, 2 );
+		print_results_m( f3, pattern, 3 );
+		cout << "Elapsed time to find pattern in multithread form : " 
+		<< chrono::duration_cast<chrono::milliseconds>(end - start).count()
+		<< " ms" << endl;
 		return 0;
 	}
 	void Run(void)
@@ -932,7 +976,7 @@ namespace MultiThreadingWithAsyncTest
 		argv[1] = new char(10);
 		cout << "Please enter a pattern atmost 10 characters for search in a dictionary:";
 		cin >> argv[1];
-		sampleMain(2, argv);
+	    sampleMain(2, argv);
 	}
 }
 
