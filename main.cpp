@@ -1036,33 +1036,29 @@ using FunctionRegistryEntry = pair<string, function<void()>>;
 // Vector to store function registry entries
 vector<FunctionRegistryEntry> functions;
 
-// Define a macro to register a function name and its pointer
-#define REGISTER_FUNCTION(func) \
-    functions.push_back(make_pair(#func, function<void()>(func)))
-
-// Define a macro to register a namespace::function
-#define REGISTER_NAMESPACE_FUNCTION(namespace_function) \
-    functions.emplace_back(#namespace_function, [] { namespace_function(); })
+// Define a macro to register a function no matter it is namespace::function or public function
+#define REGISTER_FUNCTION(function) \
+    functions.emplace_back(#function, [] { function(); })
 
 int main() {
 	REGISTER_FUNCTION(OverloadVsOverrideTest);
     REGISTER_FUNCTION(GiveWordsAndSortTest);
     REGISTER_FUNCTION(TryCatchTest);
-	REGISTER_NAMESPACE_FUNCTION(ConstAndRefInitTest::Run);
-    REGISTER_NAMESPACE_FUNCTION(FunctorTest::Run);
-    REGISTER_NAMESPACE_FUNCTION(SetContainerTest::Run);
-    REGISTER_NAMESPACE_FUNCTION(IteratorTest::Run);
-    REGISTER_NAMESPACE_FUNCTION(AlgorithmsTest::Run);
-    REGISTER_NAMESPACE_FUNCTION(IteratorDesignPatternTest::Run);
+	REGISTER_FUNCTION(ConstAndRefInitTest::Run);
+    REGISTER_FUNCTION(FunctorTest::Run);
+    REGISTER_FUNCTION(SetContainerTest::Run);
+    REGISTER_FUNCTION(IteratorTest::Run);
+    REGISTER_FUNCTION(AlgorithmsTest::Run);
+    REGISTER_FUNCTION(IteratorDesignPatternTest::Run);
     REGISTER_FUNCTION(StreamIteratorTest);
-    REGISTER_NAMESPACE_FUNCTION(DynamicCastTest::Run);
-    REGISTER_NAMESPACE_FUNCTION(TypeIdTest::Run);
+    REGISTER_FUNCTION(DynamicCastTest::Run);
+    REGISTER_FUNCTION(TypeIdTest::Run);
     REGISTER_FUNCTION(BindTest);
     REGISTER_FUNCTION(LambdaTest);
-    REGISTER_NAMESPACE_FUNCTION(SmartPointerTest::Run);
+    REGISTER_FUNCTION(SmartPointerTest::Run);
     REGISTER_FUNCTION(StreamsTest);
-    REGISTER_NAMESPACE_FUNCTION(MultiThreadingWithAsyncTest::Run);
-    REGISTER_NAMESPACE_FUNCTION(FriendClassTest::Run); 
+    REGISTER_FUNCTION(MultiThreadingWithAsyncTest::Run);
+    REGISTER_FUNCTION(FriendClassTest::Run); 
     cout << "\nPlease choose one of the sample tests below:" << functions.size() << endl;
 	
     for (int i = 0; i < functions.size(); ++i) {
