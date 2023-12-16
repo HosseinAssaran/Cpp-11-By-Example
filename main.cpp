@@ -17,7 +17,7 @@
 #include <iterator>
 using namespace std;
 
-void OverloadVsOverideTest(void)
+void OverloadVsOverrideTest(void)
 {
 	class BaseClass 
 	{ 
@@ -712,7 +712,7 @@ void BindTest(void)
 	cout << *i << " is greater than " << x << " and less than " << y << endl;
 }
 
-void LambadaTest(void)
+void LambdaTest(void)
 {
 	vector<int> v{1,2,3,4,5,6,7};
 	int x = 3;
@@ -1030,93 +1030,54 @@ namespace MultiThreadingWithAsyncTest
 	}
 }
 
-int showTestMenu(void)
-{
-	int i = 0;
-	cout << "\nPlease choose one of sample test below:";
-	cout << "\n1.  OverloadVsOverideTest";
-	cout << "\n2.  GiveWordsAndSortTest";
-	cout << "\n3.  TryCatchTest";
-	cout << "\n4.  ConstAndRefInitTest";
-	cout << "\n5.  FunctorTest";
-	cout << "\n6.  SetContainerTest";
-	cout << "\n7.  IteratorTest";
-	cout << "\n8.  AlgorithmsTest";
-	cout << "\n9.  IteratorDesignPatternTest";
-	cout << "\n10. StreamIteratorTest"; 
-	cout << "\n11. DynamicCastTest";
-	cout << "\n12. TypeIdTest";
-	cout << "\n13. BindTest";
-	cout << "\n14. LambadaTest";
-	cout << "\n15. SmartPointerTest";
-	cout << "\n16. StreamsTest";
-	cout << "\n17. MultiThreadingWithAsyncTest";
-	cout << "\n18. FriendClassTest";
-	cout << endl;
-	cin	 >> i;
-	cout << endl;
-	return i;
-}
+// Type for a function registry entry
+using FunctionRegistryEntry = pair<string, function<void()>>;
+
+// Vector to store function registry entries
+vector<FunctionRegistryEntry> functions;
+
+// Define a macro to register a function name and its pointer
+#define REGISTER_FUNCTION(func) \
+    functions.push_back(make_pair(#func, function<void()>(func)))
+
+// Define a macro to register a namespace::function
+#define REGISTER_NAMESPACE_FUNCTION(namespace_function) \
+    functions.emplace_back(#namespace_function, [] { namespace_function(); })
 
 int main() {
-	switch(showTestMenu())
-	{
-		case(1):
-		OverloadVsOverideTest();
-		break;
-		case(2):
-		GiveWordsAndSortTest();
-		break;
-		case(3):
-		TryCatchTest();
-		break;
-		case(4):
-		ConstAndRefInitTest::Run();
-		break;
-		case(5):
-		FunctorTest::Run();
-		break;			
-		case(6):
-		SetContainerTest::Run();
-		break;
-		case(7):
-		IteratorTest::Run();
-		break;		
-		case(8):
-		AlgorithmsTest::Run();
-		break;
-		case(9):
-		IteratorDesignPatternTest::Run();
-		break;			
-		case(10):
-		StreamIteratorTest();
-		break;
-		case(11):
-		DynamicCastTest::Run();
-		break;
-		case(12):
-		TypeIdTest::Run();
-		break;
-		case(13):
-		BindTest();
-		break;
-		case(14):
-		LambadaTest();
-		break;	
-		case(15):
-		SmartPointerTest::Run();
-		break;	
-		case(16):
-		StreamsTest();
-		break;
-		case(17):
-		MultiThreadingWithAsyncTest::Run();	
-		break;		
-		case(18):
-		FriendClassTest::Run();
-		break;
-	default:
-		break;
-	}
-	return 0;
+	REGISTER_FUNCTION(OverloadVsOverrideTest);
+    REGISTER_FUNCTION(GiveWordsAndSortTest);
+    REGISTER_FUNCTION(TryCatchTest);
+	REGISTER_NAMESPACE_FUNCTION(ConstAndRefInitTest::Run);
+    REGISTER_NAMESPACE_FUNCTION(FunctorTest::Run);
+    REGISTER_NAMESPACE_FUNCTION(SetContainerTest::Run);
+    REGISTER_NAMESPACE_FUNCTION(IteratorTest::Run);
+    REGISTER_NAMESPACE_FUNCTION(AlgorithmsTest::Run);
+    REGISTER_NAMESPACE_FUNCTION(IteratorDesignPatternTest::Run);
+    REGISTER_FUNCTION(StreamIteratorTest);
+    REGISTER_NAMESPACE_FUNCTION(DynamicCastTest::Run);
+    REGISTER_NAMESPACE_FUNCTION(TypeIdTest::Run);
+    REGISTER_FUNCTION(BindTest);
+    REGISTER_FUNCTION(LambdaTest);
+    REGISTER_NAMESPACE_FUNCTION(SmartPointerTest::Run);
+    REGISTER_FUNCTION(StreamsTest);
+    REGISTER_NAMESPACE_FUNCTION(MultiThreadingWithAsyncTest::Run);
+    REGISTER_NAMESPACE_FUNCTION(FriendClassTest::Run); 
+    cout << "\nPlease choose one of the sample tests below:" << functions.size() << endl;
+	
+    for (int i = 0; i < functions.size(); ++i) {
+        cout << i + 1 << ". "  << functions[i].first << endl;
+    }
+
+    int choice;
+    cin >> choice;
+
+    if (choice >= 1 && choice <= functions.size()) {
+		cout << "\nStart Runnning: " << functions[choice - 1].first << endl << endl;
+        functions[choice - 1].second();
+    } else {
+        cout << "Invalid choice." << endl;
+    }
+	cout << endl;
+    return 0;
 }
