@@ -165,6 +165,55 @@ namespace FunctorTest
 	}
 }
 
+namespace FriendClassTest {
+	class BankAccount {
+	private:
+		std::string accountHolder;
+		double balance;
+
+	public:
+		BankAccount(const std::string& holder, double initialBalance) : accountHolder(holder), balance(initialBalance) {}
+
+		const std::string& getAccountHolder() const {
+			return accountHolder;
+		}
+
+		double getBalance() const {
+			return balance;
+		}
+		//Transaction declared as a friend of BankAccount and so has access to private member of this class
+		friend class Transaction;
+	};
+
+	class Transaction {
+	public:
+		static void transfer(BankAccount& from, BankAccount& to, double amount) {
+			if (from.balance >= amount) {
+				from.balance -= amount;
+				to.balance += amount;
+
+				std::cout << "Transfer: $" << amount << " from " << from.accountHolder
+						<< " to " << to.accountHolder << std::endl;
+			} else {
+				std::cout << "Insufficient funds for transfer." << std::endl;
+			}
+		}
+	};
+
+	void Run(void) {
+		BankAccount account1("Alice", 1000.0);
+		BankAccount account2("Bob", 500.0);
+
+		std::cout << account1.getAccountHolder() << "'s Balance is: $" << account1.getBalance() << std::endl;
+		std::cout << account2.getAccountHolder() << "'s Balance is: $" << account2.getBalance() << std::endl;
+
+		Transaction::transfer(account1, account2, 200.0);
+
+		std::cout << "Now " << account1.getAccountHolder() << "'s Balance is: $" << account1.getBalance() << std::endl;
+		std::cout << "Now " << account2.getAccountHolder() << "'s Balance is: $" << account2.getBalance() << std::endl;
+	}
+}
+
 namespace SetContainerTest
 {
 	class PersonCompare;
@@ -990,8 +1039,8 @@ int showTestMenu(void)
 	cout << "\n3.  TryCatchTest";
 	cout << "\n4.  ConstAndRefInitTest";
 	cout << "\n5.  FunctorTest";
-	cout << "\n6.  IteratorTest";
-	cout << "\n7.  SetContainerTest";
+	cout << "\n6.  SetContainerTest";
+	cout << "\n7.  IteratorTest";
 	cout << "\n8.  AlgorithmsTest";
 	cout << "\n9.  IteratorDesignPatternTest";
 	cout << "\n10. StreamIteratorTest"; 
@@ -1002,6 +1051,7 @@ int showTestMenu(void)
 	cout << "\n15. SmartPointerTest";
 	cout << "\n16. StreamsTest";
 	cout << "\n17. MultiThreadingWithAsyncTest";
+	cout << "\n18. FriendClassTest";
 	cout << endl;
 	cin	 >> i;
 	cout << endl;
@@ -1027,11 +1077,11 @@ int main() {
 		FunctorTest::Run();
 		break;			
 		case(6):
-		IteratorTest::Run();
-		break;		
-		case(7):
 		SetContainerTest::Run();
 		break;
+		case(7):
+		IteratorTest::Run();
+		break;		
 		case(8):
 		AlgorithmsTest::Run();
 		break;
@@ -1062,6 +1112,9 @@ int main() {
 		case(17):
 		MultiThreadingWithAsyncTest::Run();	
 		break;		
+		case(18):
+		FriendClassTest::Run();
+		break;
 	default:
 		break;
 	}
