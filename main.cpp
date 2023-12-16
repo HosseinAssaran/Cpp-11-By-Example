@@ -1041,11 +1041,12 @@ vector<FunctionRegistryEntry> functions;
     functions.emplace_back(#function, [] { function(); })
 
 int main() {
-	REGISTER_FUNCTION(OverloadVsOverrideTest);
+    REGISTER_FUNCTION(OverloadVsOverrideTest);
     REGISTER_FUNCTION(GiveWordsAndSortTest);
     REGISTER_FUNCTION(TryCatchTest);
-	REGISTER_FUNCTION(ConstAndRefInitTest::Run);
+    REGISTER_FUNCTION(ConstAndRefInitTest::Run);
     REGISTER_FUNCTION(FunctorTest::Run);
+    REGISTER_FUNCTION(FriendClassTest::Run); 
     REGISTER_FUNCTION(SetContainerTest::Run);
     REGISTER_FUNCTION(IteratorTest::Run);
     REGISTER_FUNCTION(AlgorithmsTest::Run);
@@ -1058,7 +1059,6 @@ int main() {
     REGISTER_FUNCTION(SmartPointerTest::Run);
     REGISTER_FUNCTION(StreamsTest);
     REGISTER_FUNCTION(MultiThreadingWithAsyncTest::Run);
-    REGISTER_FUNCTION(FriendClassTest::Run); 
     cout << "\nPlease choose one of the sample tests below:" << functions.size() << endl;
 	
     for (int i = 0; i < functions.size(); ++i) {
