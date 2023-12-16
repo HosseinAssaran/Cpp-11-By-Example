@@ -4,7 +4,7 @@ Compile
 --------
 You can compile code in command mode(Linux/Windows/Mac) with below command:
 
-```g++ -std=c++11 main.cpp -o main```
+```g++ -std=c++11 main.cpp -o main -lpthread```
 
 Run
 --------
