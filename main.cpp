@@ -615,8 +615,10 @@ void StreamIteratorTest(void)
 {
 	vector<int> v;
 	
-	copy(istream_iterator<int>(cin),
-	istream_iterator<int>(),
+	cout << "Enter Integer Numbers seprated with SPACE or ENTER \
+	\n(End of input by pressing Ctrl+D on Unix-like systems or Ctrl+Z on Windows)" << endl; 
+	copy(istream_iterator<int>(cin),//This creates an input iterator for integers (int) that reads from the standard input (std::cin).
+	istream_iterator<int>(),//This creates a default-constructed end-of-stream iterator, representing the end of the input.
 	back_inserter(v));
 	
 	copy(v.begin(), v.end(),
@@ -624,6 +626,9 @@ void StreamIteratorTest(void)
 	
 	cin.clear();
 	cout << endl;
+
+	cout << "Enter Integer Numbers seprated with SPACE or ENTER -- It echoes\
+	\n(End of input by pressing Ctrl+D on Unix-like systems or Ctrl+Z on Windows)" << endl; 	
 	copy(istream_iterator<int>(cin),
 	istream_iterator<int>(),
 	ostream_iterator<int>(cout, "\n"));
@@ -633,15 +638,15 @@ namespace DynamicCastTest
 {
 	class Person{
 	public:
-		virtual void print(){cout<<"Person";};
+		virtual void print(){cout<<"\nPerson";};
 	};
 	class Employee:public Person{
 	public:
-		virtual void print(){cout<<"Employee";};
+		virtual void print(){cout<<"\nEmployee";};
 	};
 	class Manager:public Employee{
 	public:
-		virtual void print(){cout<<"Manager";};
+		virtual void print(){cout<<"\nManager";};
 	};
 	
 	void Run(void){
@@ -651,16 +656,25 @@ namespace DynamicCastTest
 		v.push_back(new Person());
 		v.push_back(new Employee());
 		v.push_back(new Employee());
-		v.push_back( new Manager());
-		v.push_back( new Manager());
+		v.push_back(new Manager());
+		v.push_back(new Manager());
+		for (auto p: v)
+		{
+			p->print();
+		}
 		Employee * p = nullptr;
 		for( Person * sz: v ){
 			p = dynamic_cast<Employee *>( sz );
 			if( p != nullptr ){
 				++counter;
 			}
+			else {
+				cout << "\n--Dynamic cast was not successful for this item because :";
+				sz->print();
+				cout << " is not an Employee.";
+			}
 		}
-		cout << "Number of employee is " << counter << endl;
+		cout << "\nNumber of employee is " << counter << endl;
 	}
 }
 
@@ -841,7 +855,7 @@ namespace SmartPointerTest
 		shared_ptr<A> pSharedPtrTest =  SharedPtrTest();
 		cout << "SharedPtrTest return address: " <<  pSharedPtrTest.get() << endl;
 		cout << "pSharedPtrTest use count: " << pSharedPtrTest.use_count() <<endl;
-		cout << endl << "WeakPtrTest::CyclicDependencyTes: " << endl; 
+		cout << endl << "WeakPtrTest::CyclicDependencyTest: " << endl; 
 		WeakPtrTest::CyclicDependencyTest();
 	}	
 }
